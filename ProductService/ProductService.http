@@ -1,0 +1,35 @@
+@ProductService_HostAddress = http://localhost:5206
+
+### Create product
+POST {{ProductService_HostAddress}}/api/product
+Content-Type: application/json
+
+{
+    "name": "Mechanical Keyboard",
+    "description": "Mechanical keyboard with Blue Switch",
+    "price": 1500000,
+    "stockQuantity": 20
+}
+
+### Get all products
+GET {{ProductService_HostAddress}}/api/product/all
+Accept: application/json
+
+### Get product
+GET {{ProductService_HostAddress}}/api/product/1
+Accept: application/json
+
+### Update product
+PUT {{ProductService_HostAddress}}/api/product/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Mechanical Keyboard Pro",
+    "description": "Mechanical keyboard with Red Switch",
+    "price": 2000000,
+    "stockQuantity": 15
+}
+
+### Delete product
+DELETE {{ProductService_HostAddress}}/api/product/1

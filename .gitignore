@@ -1,0 +1,59 @@
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# .NET
+*.dll
+*.exe
+*.pdb
+*.cache
+project.lock.json
+project.fragment.lock.json
+
+# NuGet
+.nuget/
+packages/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Development.json
+
+# Logs
+[Ll]ogs/
+*.log
+
+# Test results
+[Tt]est[Rr]esults/
+coverage/
+coverage.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+*.pid
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
