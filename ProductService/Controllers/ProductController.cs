@@ -16,9 +16,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateProduct(CreateProductDto req)
+    public async Task<IActionResult> CreateProduct(CreateProductDto req)
     {
-        var product = _productService.Create(req);
+        var product = await _productService.CreateAsync(req);
         return CreatedAtAction(
             nameof(GetProduct),
             new { id = product.Id },
@@ -27,9 +27,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetProduct(int id)
+    public async Task<IActionResult> GetProduct(int id)
     {
-        var product = _productService.GetById(id);
+        var product = await _productService.GetByIdAsync(id);
         if (product == null)
         {
             return NotFound(new
@@ -41,15 +41,15 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("all")]
-    public IActionResult GetAllProducts()
+    public async Task<IActionResult> GetAllProducts()
     {
-        return Ok(_productService.GetAll());
+        return Ok(await _productService.GetAllAsync());
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateProduct(int id, UpdateProductDto req)
+    public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto req)
     {
-        var product = _productService.Update(id, req);
+        var product = await _productService.UpdateAsync(id, req);
         if (product == null)
         {
             return NotFound(new
@@ -62,9 +62,9 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct(int id)
     {
-        var isDeleted = _productService.Delete(id);
+        var isDeleted = await _productService.DeleteAsync(id);
         if (!isDeleted)
         {
             return NotFound(new

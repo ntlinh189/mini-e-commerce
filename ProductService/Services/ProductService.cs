@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using ProductService.Data;
 using ProductService.DTOs;
 using ProductService.Models;
 
@@ -5,14 +7,19 @@ namespace ProductService.Services;
 
 public class ProductManagementService
 {
-    private readonly List<Product> _products = new();
-    private int _nextId = 1;
+    private readonly AppDbContext _context;
+    private readonly ILogger<ProductManagementService> _logger;
 
-    public ProductResponseDto Create(CreateProductDto req)
+    public ProductManagementService(AppDbContext context, ILogger<ProductManagementService> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<ProductResponseDto> CreateAsync(CreateProductDto req)
     {
         var product = new Product
         {
-            Id = _nextId++,
             Name = req.Name,
             Description = req.Description,
             Price = req.Price,
@@ -20,63 +27,53 @@ public class ProductManagementService
             CreatedAt = DateTime.UtcNow
         };
 
-        _products.Add(product);
+        _context.Products.Add(product);
 
-        return new ProductResponseDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            StockQuantity = product.StockQuantity,
-            CreatedAt = product.CreatedAt
-        };
+        await _context.SaveChangesAsync();
+
+        return MapToProductResponseDto(product);
     }
 
-    public ProductResponseDto? GetById(int id)
+    public async Task<ProductResponseDto?> GetByIdAsync(int id)
     {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
-        {
-            return null;
-        }
-        return new ProductResponseDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            StockQuantity = product.StockQuantity,
-            CreatedAt = product.CreatedAt
-        };
+        var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null) return null;
+        return MapToProductResponseDto(product);
     }
 
-    public List<ProductResponseDto> GetAll()
+    public async Task<List<ProductResponseDto>> GetAllAsync()
     {
-        return _products.Select(p => new ProductResponseDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            Price = p.Price,
-            StockQuantity = p.StockQuantity,
-            CreatedAt = p.CreatedAt
-        }).ToList();
+        var products = await _context.Products.AsNoTracking().ToListAsync();
+        return [.. products.Select(MapToProductResponseDto)];
     }
 
-    public ProductResponseDto? Update(int id, UpdateProductDto req)
+    public async Task<ProductResponseDto?> UpdateAsync(int id, UpdateProductDto req)
     {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
-        {
-            return null;
-        }
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null) return null;
 
         product.Name = req.Name;
         product.Description = req.Description;
         product.Price = req.Price;
         product.StockQuantity = req.StockQuantity;
 
+        await _context.SaveChangesAsync();
+
+        return MapToProductResponseDto(product);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (product == null) return false;
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    private static ProductResponseDto MapToProductResponseDto(Product product)
+    {
         return new ProductResponseDto
         {
             Id = product.Id,
@@ -86,45 +83,5 @@ public class ProductManagementService
             StockQuantity = product.StockQuantity,
             CreatedAt = product.CreatedAt
         };
-    }
-
-    public bool Delete(int id)
-    {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
-        {
-            return false;
-        }
-
-        _products.Remove(product);
-
-        return true;
-    }
-}
-
-
-public class OrderService
-{
-    private readonly ILogger<OrderService> _logger;
-
-    public OrderService(ILogger<OrderService> logger)
-    {
-        _logger = logger;
-    }
-
-    public async Task ProcessOrderAsync(
-        int orderId,
-        int userId)
-    {
-using (_logger.BeginScope(new Dictionary<string, object>
-{
-    ["OrderId"] = orderId,
-    ["UserId"] = userId
-}))
-{
-    _logger.LogInformation("Starting order processing");
-    _logger.LogInformation("Validating order");
-    _logger.LogInformation("Order processed successfully");
-}
     }
 }

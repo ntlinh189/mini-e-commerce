@@ -32,4 +32,16 @@ Accept: application/json
 }
 
 ### Delete product
-DELETE {{ProductService_HostAddress}}/api/product/1
+DELETE {{ProductService_HostAddress}}/api/product/2
+
+
+### Invalid Body
+POST http://localhost:5206/api/Product
+Content-Type: application/json
+
+{
+    "name": "Mechanical Keyboard",
+    "description": "",
+    "price": 1500000,
+    "stockQuantity": 0
+}
