@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ProductService.Models;
+using ProductService.Data.Entities;
 
 namespace ProductService.Data;
 
@@ -7,7 +7,6 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

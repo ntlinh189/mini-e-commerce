@@ -1,8 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProductService.Models;
 
-namespace ProductService.Data.Configurations;
+namespace ProductService.Data.Entities;
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int StockQuantity { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
 
 public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
@@ -23,5 +32,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         entity.Property(p => p.StockQuantity).IsRequired();
 
         entity.Property(p => p.CreatedAt).HasColumnType("timestamp with time zone").IsRequired();
+
+        entity.HasIndex(p => p.Name).IsUnique();
     }
 }

@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ProductService.Data;
+using Npgsql;
 using ProductService.DTOs;
-using ProductService.Models;
+using ProductService.Exceptions;
+using ProductService.Data;
+using ProductService.Data.Entities;
 
 namespace ProductService.Services;
 
@@ -21,7 +23,7 @@ public class ProductManagementService
         var product = new Product
         {
             Name = req.Name,
-            Description = req.Description,
+            Description = req.Description ?? "",
             Price = req.Price,
             StockQuantity = req.StockQuantity,
             CreatedAt = DateTime.UtcNow
@@ -29,7 +31,18 @@ public class ProductManagementService
 
         _context.Products.Add(product);
 
-        await _context.SaveChangesAsync();
+        try
+        { 
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+            when (
+                ex.InnerException is PostgresException pgEx &&
+                pgEx.SqlState == PostgresErrorCodes.UniqueViolation
+            )
+        {
+            throw new DuplicateProductNameException(req.Name);
+        }
 
         return MapToProductResponseDto(product);
     }
@@ -53,7 +66,7 @@ public class ProductManagementService
         if (product == null) return null;
 
         product.Name = req.Name;
-        product.Description = req.Description;
+        product.Description = req.Description ?? product.Description;
         product.Price = req.Price;
         product.StockQuantity = req.StockQuantity;
 

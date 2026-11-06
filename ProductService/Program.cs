@@ -1,35 +1,32 @@
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Data;
-using ProductService.Services;
-using FluentValidation;
-using ProductService.Validators;
-using ProductService.Filters;
+using ProductService.DependencyInjection;
 
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Connect to PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("Default")
 ));
 
-// Add services to the container.
+// Middlewares
+builder.Services.AddMiddlewares();
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.AddService<ValidationFilter>();
-});
+// Controllers
+builder.Services.AddControllers();
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
+// Services
+builder.Services.AddApplicationServices();
 
-builder.Services.AddScoped<ValidationFilter>();
-builder.Services.AddScoped<ProductManagementService>();
-
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// OpenApi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

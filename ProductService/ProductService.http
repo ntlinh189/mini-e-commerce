@@ -40,8 +40,8 @@ POST http://localhost:5206/api/Product
 Content-Type: application/json
 
 {
-    "name": "Mechanical Keyboard",
-    "description": "",
-    "price": 1500000,
-    "stockQuantity": 0
+    "name": "",
+    "description": "Test",
+    "price": -100,
+    "stockQuantity": -5
 }
