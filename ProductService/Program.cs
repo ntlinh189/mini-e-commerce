@@ -1,9 +1,6 @@
-using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Data;
 using ProductService.DependencyInjection;
-
-Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -34,7 +34,7 @@ packages/
 .env.*
 !.env.example
 secrets.json
-appsettings.Development.json
+appsettings.Production.json
 
 # Logs
 [Ll]ogs/
